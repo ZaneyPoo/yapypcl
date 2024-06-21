@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Callable
+from typing import Callable, cast
 
 
 class ResultKind(Enum):
@@ -49,6 +49,9 @@ class ParseErr:
 type Parsed[T] = tuple[list[T], str]
 
 
+class UnwrapException(Exception): ...
+
+
 @dataclass(slots=True)
 class ParseResult[T]:
     kind: ResultKind
@@ -72,6 +75,11 @@ class ParseResult[T]:
 
     def is_ok(self) -> bool:
         return self.kind is ResultKind.Ok
+
+    def expect(self, message: str = "tried to unwrap an invalid result") -> Parsed[T]:
+        if self.is_err():
+            raise UnwrapException(message)
+        return cast(Parsed[T], self.data)
 
     @staticmethod
     def make_err(err: ParseErr) -> ParseResult:
