@@ -31,7 +31,7 @@ class ParseErr:
     def __repr__(self) -> str:
         match self.kind:
             case ParseErrKind.ExpectedChar:
-                return f"Expected char: {self.data['char']}, got: '{self.data['got']}'"
+                return f"Expected char: '{self.data['char']}', got: '{self.data['got']}'"
 
             case _:
                 return self.kind.name
@@ -42,7 +42,7 @@ class ParseErr:
 
     @staticmethod
     def expected_char(char: str, got: str) -> ParseErr:
-        return ParseErr(ParseErrKind.ExpectedChar, {char: char, got: got})
+        return ParseErr(ParseErrKind.ExpectedChar, {"char": char, "got": got})
 
 
 # FIXME: This typename could easily be misread; it should be renamed.
@@ -58,9 +58,7 @@ class ParseResult[T]:
     data: Parsed[T] | ParseErr
 
     def __repr__(self) -> str:
-        if self.kind is ResultKind.Ok:
-            return f"Ok({self.data})"
-        return f"Err({self.kind.name}: {self.data})"
+        return f"{self.kind.name}({self.data})"
 
     # @staticmethod
     # def is_err(result: ParseResult[T]) -> TypeGuard[ParseErr]:
