@@ -49,8 +49,11 @@ class ParseErr:
 type Parsed[T] = tuple[list[T], str]
 
 
+# TODO: Maybe move this into the ParseResult namespace?
 class UnwrapException(Exception): ...
 
+# FIXME: Very verbose name. Rename?
+class ParseConstructionException(Exception): ...
 
 @dataclass(slots=True)
 class ParseResult[T]:
