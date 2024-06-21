@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Callable, Literal
+from typing import Callable
 
 
 class ResultKind(Enum):
@@ -23,7 +23,7 @@ class ParseErrKind(Enum):
     ExpectedChar = auto()
 
 
-@dataclass
+@dataclass(slots=True)
 class ParseErr:
     kind: ParseErrKind
     data: dict[str, str] = field(default_factory=dict)
@@ -45,22 +45,40 @@ class ParseErr:
         return ParseErr(ParseErrKind.ExpectedChar, {char: char, got: got})
 
 
-@dataclass
+# FIXME: This typename could easily be misread; it should be renamed.
+type Parsed[T] = tuple[list[T], str]
+
+
+@dataclass(slots=True)
 class ParseResult[T]:
     kind: ResultKind
-    data: tuple[list[T], str] | ParseErr
+    data: Parsed[T] | ParseErr
 
     def __repr__(self) -> str:
-        if self.kind == ResultKind.Ok:
+        if self.kind is ResultKind.Ok:
             return f"Ok({self.data})"
         return f"Err({self.kind.name}: {self.data})"
+
+    # @staticmethod
+    # def is_err(result: ParseResult[T]) -> TypeGuard[ParseErr]:
+    #     return result.kind is ResultKind.Err
+    #
+    # @staticmethod
+    # def is_ok(result: ParseResult[T]) -> TypeGuard[Parsed[T]]:
+    #     return result.kind is ResultKind.Ok
+
+    def is_err(self) -> bool:
+        return self.kind is ResultKind.Err
+
+    def is_ok(self) -> bool:
+        return self.kind is ResultKind.Ok
 
     @staticmethod
     def make_err(err: ParseErr) -> ParseResult:
         return ParseResult(ResultKind.Err, err)
 
     @staticmethod
-    def make_ok(data: tuple[list[T], str]) -> ParseResult[T]:
+    def make_ok(data: Parsed[T]) -> ParseResult[T]:
         return ParseResult(ResultKind.Ok, data)
 
 
