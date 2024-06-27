@@ -100,14 +100,11 @@ class ParseResult[T]:
         return ParseResult(ResultKind.Ok, data)
 
 
+# TODO: Add type variable for both input and output types, not just output
 type Parser[T] = Callable[[str], ParseResult[T]]
 
-@dataclass(slots=True)
-class _Parser[T]:
-    def parse(self, text: str) -> ParseResult[T]:
-        ...
-
-
+# TODO: Consider using Generators to allow proper method chaining 
+#       a la Rust's combinator libraries
 def parse[T](parser: Parser[T], text: str) -> ParseResult[T]:
     """
     Parse a string using the given parser.
