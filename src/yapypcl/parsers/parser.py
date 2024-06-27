@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Callable, cast
+from typing import Any, Callable, cast
 
 
 class ResultKind(Enum):
@@ -21,17 +21,21 @@ class ResultKind(Enum):
 class ParseErrKind(Enum):
     UnexpectedEof = auto()
     ExpectedChar = auto()
+    ExpectedOneOf = auto()
 
 
 @dataclass(slots=True)
 class ParseErr:
     kind: ParseErrKind
-    data: dict[str, str] = field(default_factory=dict)
+    data: dict[str, Any] = field(default_factory=dict)
 
     def __repr__(self) -> str:
         match self.kind:
             case ParseErrKind.ExpectedChar:
                 return f"Expected char: '{self.data['char']}', got: '{self.data['got']}'"
+
+            case ParseErrKind.ExpectedOneOf:
+                return f"Expected one of '{self.data['tokens']}', got '{self.data['got']}'"
 
             case _:
                 return self.kind.name
@@ -43,6 +47,11 @@ class ParseErr:
     @staticmethod
     def expected_char(char: str, got: str) -> ParseErr:
         return ParseErr(ParseErrKind.ExpectedChar, {"char": char, "got": got})
+
+
+    @staticmethod
+    def expected_one_of(tokens: list[str], got) -> ParseErr:
+        return ParseErr(ParseErrKind.ExpectedOneOf, {"tokens": tokens, "got": got})
 
 
 # FIXME: This typename could easily be misread; it should be renamed.
@@ -92,6 +101,11 @@ class ParseResult[T]:
 
 
 type Parser[T] = Callable[[str], ParseResult[T]]
+
+@dataclass(slots=True)
+class _Parser[T]:
+    def parse(self, text: str) -> ParseResult[T]:
+        ...
 
 
 def parse[T](parser: Parser[T], text: str) -> ParseResult[T]:
