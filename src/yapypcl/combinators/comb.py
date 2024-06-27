@@ -7,7 +7,7 @@ Zane Hargis -- Copyright 2024
 """
 
 from typing import cast
-from parsers.parser import Parsed, Parser, ParseResult
+from src.yapypcl.parsers.parser import Parsed, Parser, ParseResult
 
 
 def compose[T](parser1: Parser[T], parser2: Parser[T]) -> Parser[T]:
