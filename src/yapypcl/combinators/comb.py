@@ -25,3 +25,23 @@ def compose[T](parser1: Parser[T], parser2: Parser[T]) -> Parser[T]:
         return ParseResult.make_ok(([*nommed1, *nommed2], remaining))
 
     return parser
+
+def many0[T](p: Parser[T]) -> Parser[list[T]]:
+    def parser(text: str) -> ParseResult[list[T]]:
+        ...
+
+    return parser
+
+
+def many1[T](p: Parser[T]) -> Parser[list[T]]:
+    def parser(text: str) -> ParseResult[list[T]]:
+        ...
+
+    return parser
+
+
+def attempt[T](first: Parser[T], otherwise: Parser[T]) -> Parser[T]:
+    def parser(text: str) -> ParseResult[T]:
+        ...
+
+    return parser
