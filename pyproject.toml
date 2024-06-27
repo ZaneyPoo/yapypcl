@@ -1,9 +1,9 @@
 [project]
 name = "yapypcl"
 version = "0.1.0"
-description = "Default template for PDM package"
+description = "Yappy Pickle - A toy parser combinator library for Python."
 authors = [
-    {name = "Zane", email = "zanehargis@gmail.com"},
+    {name = "Zane Hargis", email = "zanehargis@gmail.com"},
 ]
 dependencies = [
     "pytest>=8.2.2",
